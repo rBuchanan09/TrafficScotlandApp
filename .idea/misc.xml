@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/ross1/Desktop/Uni/Trimester2/Mobile Dev/Android Studio Projects/Buchanan_Ross_S2144101/app/src/main/res/layout/activity_main.xml" value="0.1796875" />
+        <entry key="..\:/Users/Ross/Desktop/Buchanan_Ross_S2144101/app/src/main/res/layout/activity_main.xml" value="0.3140625" />
+        <entry key="..\:/Users/Ross/Desktop/Buchanan_Ross_S2144101/app/src/main/res/layout/list_group.xml" value="0.3140625" />
+        <entry key="..\:/Users/Ross/Desktop/Buchanan_Ross_S2144101/app/src/main/res/layout/list_item.xml" value="0.3140625" />
+        <entry key="..\:/Users/Ross/Desktop/Buchanan_Ross_S2144101/app/src/main/res/layout/list_items.xml" value="0.3140625" />
+        <entry key="..\:/Users/Ross/Desktop/Buchanan_Ross_S2144101/app/src/main/res/menu/menu.xml" value="0.31302083333333336" />
+        <entry key="..\:/Users/ross1/Desktop/Uni/Trimester2/Mobile Dev/Android Studio Projects/Buchanan_Ross_S2144101/app/src/main/res/layout/activity_main.xml" value="0.15561959654178675" />
       </map>
     </option>
   </component>

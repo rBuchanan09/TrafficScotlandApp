@@ -1,16 +1,24 @@
 package com.example.buchanan_ross_s2144101;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 
 import android.accessibilityservice.AccessibilityService;
+import android.graphics.Color;
+import android.icu.text.CaseMap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -28,23 +36,39 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+/*
+   Name: Ross Buchanan
+   Student Number: S2144101
+ */
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
-    private TextView rawDataDisplay;
-    private Button frButton1, frButton2, frButton3;
-    private Fragment fr1, fr2, fr3;
-    private String result = "";
-    private ListView currentIncidentsListView, roadworks, planRoadworks;
+    private Button curIncidentbtn, roadworksbtn, plannedRoadWorksbtn;
+
+    private String incidentRes = "", roadworkRes = "";
+    private CurrentIncidents currentIncident;
 
     // Traffic Scotland Planned Roadworks XML link
     private String pRoadWorksUrl = "https://trafficscotland.org/rss/feeds/plannedroadworks.aspx";
     private String curIncidentsUrl = "https://trafficscotland.org/rss/feeds/currentincidents.aspx";
     private String roadworksUrl = "https://trafficscotland.org/rss/feeds/roadworks.aspx";
 
+    private ArrayAdapter<CurrentIncidents> arrayAdapterCurrentIncidents;
+    private ListView currentIncidentsList;
+    private List<CurrentIncidents> incidents = null;
 
-    private ArrayAdapter<currentIncidents> arrayAdapterCurrentIncidents;
-    private ArrayList currentIncidentsList;
+    private ArrayAdapter<Roadworks> arrayAdapterRoadworks;
+    private ListView roadworkslist;
+    private List<Roadworks> roadworks = null;
+
+    private ArrayAdapter<PlannedRoadWorks> arrayAdapterPlannedRoadworks;
+    private ListView plannedRoadworksList;
+    private List<PlannedRoadWorks> plannedRoadWorks = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,41 +76,71 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         setContentView(R.layout.activity_main);
         Log.e("MyTag", "in onCreate");
         // Set up the raw links to the graphical components
-        rawDataDisplay = (TextView) findViewById(R.id.rawDataDisplay);
-        frButton1 = (Button) findViewById(R.id.frButton1);
-        frButton2 = (Button) findViewById(R.id.frButton2);
-        frButton3 = (Button) findViewById(R.id.frButton3);
 
-        frButton1.setOnClickListener(this);
-        frButton2.setOnClickListener(this);
-        frButton3.setOnClickListener(this);
+        curIncidentbtn = (Button) findViewById(R.id.curIncidentbtn);
+        curIncidentbtn.setOnClickListener(this);
+        currentIncidentsList = (ListView) findViewById(R.id.currentIncidentsList);
+        currentIncidentsList.setVisibility(View.GONE);
 
-        // fr1 = new FragmentOne();
+        roadworksbtn = (Button)findViewById(R.id.roadworksbtn);
+        roadworksbtn.setOnClickListener(this);
+        roadworkslist = (ListView)findViewById(R.id.roadworkslist);
+        roadworkslist.setVisibility(View.GONE);
 
-        currentIncidentsListView = (ListView) findViewById(R.id.curIncidents);
-        roadworks = (ListView) findViewById(R.id.roadworks);
-        planRoadworks = (ListView) findViewById(R.id.planRoadWorks);
-
-        currentIncidentsList = new ArrayList();
-        arrayAdapterCurrentIncidents = new ArrayAdapter<currentIncidents>(MainActivity.this, android.R.layout.simple_list_item_1, currentIncidentsList);
-
-        Log.e("MyTag", "after startButton");
-        // More Code goes here
-
+        plannedRoadWorksbtn = (Button)findViewById(R.id.plannedRoadWorksbtn);
+        plannedRoadWorksbtn.setOnClickListener(this);
+        plannedRoadworksList = (ListView)findViewById(R.id.plannedRoadWorksList);
+        plannedRoadworksList.setVisibility(View.GONE);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint("Type here to search");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                arrayAdapterCurrentIncidents.getFilter().filter(newText);
+                arrayAdapterRoadworks.getFilter().filter(newText);
+                arrayAdapterPlannedRoadworks.getFilter().filter(newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
     public void startProgress() {
-        // Run network access on a separate thread;
-        if (frButton1.isPressed())
+        if (curIncidentbtn.isPressed()) {
+            incidentRes = "";
             new Thread(new Task(curIncidentsUrl)).start();
-
-        // if(frButton2.isPressed())
-        //   new Thread(new Task(roadworksUrl)).start();
-
-        //if(frButton3.isPressed())
-        //  new Thread(new Task(pRoadWorksUrl)).start();
-
-    } //
+            currentIncidentsList.setVisibility(View.VISIBLE);
+            roadworkslist.setVisibility(View.GONE);
+            plannedRoadworksList.setVisibility(View.GONE);
+        }
+        if(roadworksbtn.isPressed()) {
+            incidentRes = "";
+            new Thread(new Task(roadworksUrl)).start();
+            roadworkslist.setVisibility(View.VISIBLE);
+            currentIncidentsList.setVisibility(View.GONE);
+            plannedRoadworksList.setVisibility(View.GONE);
+        }
+        if(plannedRoadWorksbtn.isPressed()) {
+            incidentRes = "";
+            new Thread(new Task(pRoadWorksUrl)).start();
+            plannedRoadworksList.setVisibility(View.VISIBLE);
+            currentIncidentsList.setVisibility(View.GONE);
+            roadworkslist.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -110,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             URL aurl;
             URLConnection yc;
             BufferedReader in = null;
-            String inputLine = "";
+            String inputLine1 = "", inputLine2 = "";
 
             Log.e("MyTag", "in run");
 
@@ -120,37 +174,38 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 yc = aurl.openConnection();
                 in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
                 Log.e("MyTag", "after ready");
-                //
-                // Now read the data. Make sure that there are no specific hedrs
-                // in the data file that you need to ignore.
-                // The useful data that you need is in each of the item entries
-                //
-                while ((inputLine = in.readLine()) != null) {
-                    result = result + inputLine;
-                    Log.e("MyTag", inputLine);
 
+                while ((inputLine1 = in.readLine()) != null) {
+                    incidentRes += inputLine1;
+                    Log.e("MyTag", inputLine1);
                 }
                 in.close();
-            } catch (IOException ae) {
+
+                XmlParser parser = new XmlParser();
+                incidents = parser.parseDataIncidents(incidentRes);
+                arrayAdapterCurrentIncidents = new ArrayAdapter<CurrentIncidents>(MainActivity.this, android.R.layout.simple_list_item_1, incidents);
+
+                roadworks = parser.parseDataRoadWorks(incidentRes);
+                arrayAdapterRoadworks = new ArrayAdapter<Roadworks>(MainActivity.this, android.R.layout.simple_list_item_1, roadworks);
+
+                plannedRoadWorks = parser.parseDataPlannedRoadWorks(incidentRes);
+                arrayAdapterPlannedRoadworks = new ArrayAdapter<PlannedRoadWorks>(MainActivity.this, android.R.layout.simple_list_item_1, plannedRoadWorks);
+            }
+            catch (IOException ae) {
                 Log.e("MyTag", "ioexception in run");
             }
-
-            //
-            // Now that you have the xml data you can parse it
-            //
-
-            pullParseXml.parseData(result);
-            // Now update the TextView to display raw XML data
-            // Probably not the best way to update TextView
-            // but we are just getting started !
-
             MainActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
-                    System.out.println("here!");
-                    currentIncidentsListView.setAdapter(arrayAdapterCurrentIncidents);
+                    if(!arrayAdapterCurrentIncidents.equals(null))
+                        currentIncidentsList.setAdapter(arrayAdapterCurrentIncidents);
+                    if(!arrayAdapterRoadworks.equals(null))
+                        roadworkslist.setAdapter(arrayAdapterRoadworks);
+                    if(!arrayAdapterPlannedRoadworks.equals(null))
+                        plannedRoadworksList.setAdapter(arrayAdapterPlannedRoadworks);
                 }
             });
         }
     }
 }
+

@@ -1,82 +1,64 @@
-<!--  MPD XML Starter code Semester B Session 2020 2021  -->
+<!-- Name: Ross Buchanan -->
+<!-- Student Number: S2144101 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
         <TextView
             android:id="@+id/salutation"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:text="Welcome to Mobile Platform Development Assignment 2021-2022"
-            />
+            android:text="Traffic Scotland App"
+            android:textAlignment="center" />
 
         <Button
-            android:id="@+id/frButton1"
+            android:id="@+id/curIncidentbtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Show Current Incidents"
-            />
+            android:backgroundTint="@color/lightBlue"
+            android:divider="@color/lightBlue"
+            android:text="Show Current Incidents" />
 
         <ListView
-            android:id="@+id/curIncidents"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            />
+            android:id="@+id/currentIncidentsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/lightBlue"
+            android:dividerHeight="2dp" />
 
         <Button
-            android:id="@+id/frButton2"
+            android:id="@+id/roadworksbtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Show Road Works"
-            />
+            android:backgroundTint="@color/Red"
+            android:text="Show Road Works" />
 
         <ListView
-            android:id="@+id/roadworks"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            />
+            android:id="@+id/roadworkslist"
+            android:layout_width="match_parent"
+            android:layout_height="583dp"
+            android:divider="@color/Red"
+            android:dividerHeight="2dp" />
 
         <Button
-            android:id="@+id/frButton3"
+            android:id="@+id/plannedRoadWorksbtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Show Planned Road Works"
-            />
+            android:backgroundTint="@color/Green"
+            android:text="Show Planned Road Works" />
 
         <ListView
-            android:id="@+id/planRoadWorks"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            />
-
-
-
-
-
-        <TextView
-            android:id="@+id/acknowledgement"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Contains Traffic Scotland Data"
-            />
-
-        <TextView
-            android:id="@+id/rawDataDisplay"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Raw Data is Displayed here"
-            />
-
+            android:id="@+id/plannedRoadWorksList"
+            android:layout_width="match_parent"
+            android:layout_height="583dp"
+            android:divider="@color/Green"
+            android:dividerHeight="2dp" />
     </LinearLayout>
 </ScrollView>
