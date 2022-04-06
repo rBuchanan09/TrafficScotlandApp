@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
 
     public void startProgress() {
+        // this is a comment
         if (curIncidentbtn.isPressed()) {
             incidentRes = "";
             new Thread(new Task(curIncidentsUrl)).start();
