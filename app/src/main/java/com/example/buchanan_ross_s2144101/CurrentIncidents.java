@@ -1,18 +1,12 @@
 package com.example.buchanan_ross_s2144101;
 
-import java.util.ArrayList;
-
 /*
    Name: Ross Buchanan
    Student Number: S2144101
  */
 
 public class CurrentIncidents {
-    private String title;
-    private String description;
-    private String link;
-    private String point;
-    private String pubDate;
+    private String title, description, link, point, pubDate;
 
     public String getTitle() {
         return title;

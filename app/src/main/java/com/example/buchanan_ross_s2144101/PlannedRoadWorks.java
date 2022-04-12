@@ -5,14 +5,11 @@ package com.example.buchanan_ross_s2144101;
    Student Number: S2144101
  */
 
-// comment 1
-// comment 2
+import java.util.Date;
+
 public class PlannedRoadWorks {
-    private String title;
-    private String description;
-    private String link;
-    private String point;
-    private String pubDate;
+    private String title, description, link, point, pubDate, timeFrame;
+    private Date startDate, endDate;
 
     public String getTitle() {
         return title;
@@ -34,6 +31,12 @@ public class PlannedRoadWorks {
         return pubDate;
     }
 
+    public Date getStartDate() { return startDate; }
+
+    public Date getEndDate() { return endDate; }
+
+    public String getTimeFrame() { return  timeFrame; }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -54,8 +57,14 @@ public class PlannedRoadWorks {
         this.pubDate = pubDate;
     }
 
+    public void setStartDate(Date startDate) { this.startDate = startDate; }
+
+    public void setEndDate(Date endDate) { this.endDate = endDate; }
+
+    public void setTimeFrame(String timeFrame) { this.timeFrame = timeFrame; }
+
     @Override
     public String toString() {
-        return  "Title: " + title + "\nDescription: \n" + description + "\nLink: \n" + link + "\nPoint: " + point + "\nPublish Date: " + pubDate;
+        return  "Title: " + title + "\nDescription: \n" + description + "\nLink: \n" + link + "\nPoint: " + point + "\nPublish Date: " + pubDate + "\n\n" + timeFrame;
     }
 }

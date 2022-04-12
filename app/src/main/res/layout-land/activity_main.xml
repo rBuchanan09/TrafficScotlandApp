@@ -1,0 +1,64 @@
+<!-- Name: Ross Buchanan -->
+<!-- Student Number: S2144101 -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/salutation"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Traffic Scotland App"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/curIncidentbtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/lightBlue"
+            android:divider="@color/lightBlue"
+            android:text="Show Current Incidents" />
+
+        <ListView
+            android:id="@+id/currentIncidentsList"
+            android:layout_width="match_parent"
+            android:layout_height="583dp"
+            android:divider="@color/lightBlue"
+            android:dividerHeight="2dp" />
+
+        <Button
+            android:id="@+id/roadworksbtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/Red"
+            android:text="Show Road Works" />
+
+        <ListView
+            android:id="@+id/roadworkslist"
+            android:layout_width="match_parent"
+            android:layout_height="583dp"
+            android:divider="@color/Red"
+            android:dividerHeight="2dp" />
+
+        <Button
+            android:id="@+id/plannedRoadWorksbtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/Green"
+            android:text="Show Planned Road Works" />
+
+        <ListView
+            android:id="@+id/plannedRoadWorksList"
+            android:layout_width="match_parent"
+            android:layout_height="583dp"
+            android:divider="@color/Green"
+            android:dividerHeight="2dp" />
+    </LinearLayout>
+</ScrollView>

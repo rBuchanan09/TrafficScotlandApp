@@ -5,8 +5,12 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Context;
+import android.database.DatabaseErrorHandler;
 import android.graphics.Color;
 import android.icu.text.CaseMap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -15,11 +19,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.ContentHandler;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -50,8 +54,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     private Button curIncidentbtn, roadworksbtn, plannedRoadWorksbtn;
 
-    private String incidentRes = "", roadworkRes = "";
-    private CurrentIncidents currentIncident;
+    private String incidentRes = "";
 
     // Traffic Scotland Planned Roadworks XML link
     private String pRoadWorksUrl = "https://trafficscotland.org/rss/feeds/plannedroadworks.aspx";
@@ -108,19 +111,41 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                arrayAdapterCurrentIncidents.getFilter().filter(newText);
-                arrayAdapterRoadworks.getFilter().filter(newText);
-                arrayAdapterPlannedRoadworks.getFilter().filter(newText);
+
+                List<CurrentIncidents> CurrentIncidentSearch = new ArrayList<>();
+                for(CurrentIncidents currentIncidents : incidents) {
+                    if(currentIncidents.getTitle().contains(newText) || currentIncidents.getPubDate().contains(newText)) {
+                        CurrentIncidentSearch.add(currentIncidents);
+                    }
+                }
+
+                arrayAdapterCurrentIncidents = new ArrayAdapter<CurrentIncidents>(MainActivity.this, android.R.layout.simple_list_item_1, CurrentIncidentSearch);
+                currentIncidentsList.setAdapter(arrayAdapterCurrentIncidents);
+
+                List<Roadworks> roadworksSearch = new ArrayList<>();
+                for(Roadworks roadwork : roadworks) {
+                    if(roadwork.getTitle().contains(newText) || roadwork.getPubDate().contains(newText)) {
+                        roadworksSearch.add(roadwork);
+                    }
+                }
+                arrayAdapterRoadworks = new ArrayAdapter<Roadworks>(MainActivity.this, android.R.layout.simple_list_item_1, roadworksSearch);
+                roadworkslist.setAdapter(arrayAdapterRoadworks);
+
+                List<PlannedRoadWorks> plannedRoadSearch = new ArrayList<>();
+                for(PlannedRoadWorks plannedRoadWork : plannedRoadWorks) {
+                    if(plannedRoadWork.getTitle().contains(newText) || plannedRoadWork.getPubDate().contains(newText)) {
+                        plannedRoadSearch.add(plannedRoadWork);
+                    }
+                }
+                arrayAdapterPlannedRoadworks = new ArrayAdapter<PlannedRoadWorks>(MainActivity.this, android.R.layout.simple_list_item_1, plannedRoadSearch);
+                plannedRoadworksList.setAdapter(arrayAdapterPlannedRoadworks);
                 return false;
             }
         });
         return super.onCreateOptionsMenu(menu);
     }
 
-
     public void startProgress() {
-        // this is a comment
-        // this is another comment
         if (curIncidentbtn.isPressed()) {
             incidentRes = "";
             new Thread(new Task(curIncidentsUrl)).start();
@@ -147,12 +172,22 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     @Override
     public void onClick(View v) {
         Log.e("MyTag", "in onClick");
-        startProgress();
+        if(isConnected(this)) {
+            startProgress();
+            Log.e("Sucess", "Connected to internet");
+        }
+        else {
+            Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            Log.e("Error", "Not connected to internet");
+        }
         Log.e("MyTag", "after startProgress");
     }
 
-    // Need separate thread to access the internet resource over network
-    // Other neater solutions should be adopted in later iterations.
+    private boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return  connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
     private class Task implements Runnable {
         private String url;
 
@@ -166,10 +201,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             URL aurl;
             URLConnection yc;
             BufferedReader in = null;
-            String inputLine1 = "", inputLine2 = "";
+            String inputLine1 = "";
 
             Log.e("MyTag", "in run");
-
             try {
                 Log.e("MyTag", "in try");
                 aurl = new URL(url);
@@ -192,19 +226,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 plannedRoadWorks = parser.parseDataPlannedRoadWorks(incidentRes);
                 arrayAdapterPlannedRoadworks = new ArrayAdapter<PlannedRoadWorks>(MainActivity.this, android.R.layout.simple_list_item_1, plannedRoadWorks);
-            }
-            catch (IOException ae) {
+            } catch (IOException ae) {
                 Log.e("MyTag", "ioexception in run");
             }
             MainActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
-                    if(!arrayAdapterCurrentIncidents.equals(null))
-                        currentIncidentsList.setAdapter(arrayAdapterCurrentIncidents);
-                    if(!arrayAdapterRoadworks.equals(null))
-                        roadworkslist.setAdapter(arrayAdapterRoadworks);
-                    if(!arrayAdapterPlannedRoadworks.equals(null))
-                        plannedRoadworksList.setAdapter(arrayAdapterPlannedRoadworks);
+                    currentIncidentsList.setAdapter(arrayAdapterCurrentIncidents);
+                    roadworkslist.setAdapter(arrayAdapterRoadworks);
+                    plannedRoadworksList.setAdapter(arrayAdapterPlannedRoadworks);
                 }
             });
         }

@@ -1,23 +1,22 @@
 package com.example.buchanan_ross_s2144101;
 
-import android.util.Log;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-
 /*
    Name: Ross Buchanan
    Student Number: S2144101
  */
 
+import android.util.Log;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class XmlParser {
-    static final String itemTag = "item";
     static final String titleTag = "title";
     static final String descriptionTag = "description";
     static final String linkTag = "link";
@@ -127,22 +126,49 @@ public class XmlParser {
                             roadwork.setTitle(text);
                             Log.e("My Tag", "title is " + roadwork.getTitle());
                         } else if (tagName.equalsIgnoreCase(descriptionTag)) {
-
-                           //String start = text.substring(12, text.indexOf("<br />"));
-
-                          //  String end_sub = text.substring(text.indexOf("End Date: "));
-                          // String end = end_sub.substring("End Date: ".length(), end_sub.indexOf("<br />"));
-
-                           // System.out.println("Start " + start + "End " + end);
-
-                         //   System.out.println("Start: " + start);
-
                             String[] split = text.split("<br />");
                             StringBuilder stringBuilder = new StringBuilder();
 
-                            for(String str : split)
+                            for(String str : split) {
                                 stringBuilder.append(str).append(" ");
 
+                                if (str.contains("Start Date")) {
+                                    try {
+                                        String startDate = str.split("Start Date: ")[1];
+                                        SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMM yyyy - HH:mm");
+                                        Date start = dateFormat.parse(startDate);
+                                        roadwork.setStartDate(start);
+                                        Log.e("Start", "Date: " + start);
+                                    } catch (Exception ex) {
+                                        Log.e("Error: ", ex.getMessage());
+                                    }
+                                }
+                                else if (str.contains("End Date")) {
+                                    try
+                                    {
+                                        String endDate = str.split("End Date: ")[1];
+                                        SimpleDateFormat dateFormat1 = new SimpleDateFormat("E, dd MMM yyyy - HH:mm");
+                                        Date end = dateFormat1.parse(endDate);
+                                        roadwork.setEndDate(end);
+                                        Log.e("End", "Date: " + roadwork.getEndDate());
+                                    } catch (Exception ex) {
+                                        Log.e("Error: ", ex.getMessage());
+                                    }
+                                    long numOfDays = roadwork.getEndDate().getTime() - roadwork.getStartDate().getTime();
+                                    float daysBetween = (numOfDays / (1000 * 60 * 60 * 24));
+
+                                    if(daysBetween <= 3) {
+                                        roadwork.setTimeFrame("Road works wont be here for long");
+
+                                    }
+                                    else if (daysBetween > 3 && daysBetween <= 10)
+                                        roadwork.setTimeFrame("Road works will be here for quite a while");
+                                    else
+                                        roadwork.setTimeFrame("Road works will be here for a while");
+
+                                    Log.e("Days: ", "Days amount: " + daysBetween);
+                                }
+                            }
                             roadwork.setDescription(stringBuilder.toString());
                             Log.e("My Tag", "description is " + roadwork.getDescription());
                         } else if (tagName.equalsIgnoreCase(linkTag)) {
@@ -208,9 +234,40 @@ public class XmlParser {
                             String[] split = text.split("<br />");
                             StringBuilder stringBuilder = new StringBuilder();
 
-                            for(String str : split)
+                            for(String str : split) {
                                 stringBuilder.append(str).append(" ");
 
+                                if (str.contains("Start Date")) {
+                                    try {
+                                        String startDate = str.split("Start Date: ")[1];
+                                        SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMM yyyy - HH:mm");
+                                        Date start = dateFormat.parse(startDate);
+                                        plannedRoadWork.setStartDate(start);
+                                        Log.e("Start", "Date: " + start);
+                                    } catch (Exception ex) {
+                                        Log.e("Error: ", ex.getMessage());
+                                    }
+                                } else if (str.contains("End Date")) {
+                                    try {
+                                        String endDate = str.split("End Date: ")[1];
+                                        SimpleDateFormat dateFormat1 = new SimpleDateFormat("E, dd MMM yyyy - HH:mm");
+                                        Date end = dateFormat1.parse(endDate);
+                                        plannedRoadWork.setEndDate(end);
+                                        Log.e("End", "Date: " + plannedRoadWork.getEndDate());
+                                    } catch (Exception ex) {
+                                        Log.e("Error: ", ex.getMessage());
+                                    }
+                                    long numOfDays = plannedRoadWork.getEndDate().getTime() - plannedRoadWork.getStartDate().getTime();
+                                    float daysBetween = (numOfDays / (1000 * 60 * 60 * 24));
+
+                                    if (daysBetween <= 3)
+                                        plannedRoadWork.setTimeFrame("Road works wont be here for long");
+                                    else if (daysBetween > 3 && daysBetween <= 10)
+                                        plannedRoadWork.setTimeFrame("Road works will be here for quite a while");
+                                    else
+                                        plannedRoadWork.setTimeFrame("Road works will be here for a while");
+                                }
+                            }
                             plannedRoadWork.setDescription(stringBuilder.toString());
                             Log.e("My Tag", "description is " + plannedRoadWork.getDescription());
                         } else if (tagName.equalsIgnoreCase(linkTag)) {
